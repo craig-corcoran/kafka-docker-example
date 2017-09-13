@@ -1,0 +1,61 @@
+version: '3'
+services:
+  kafka_exampl:
+    restart: always
+    build: .
+    command: node_modules/.bin/nodemon --harmony --inspect-brk=0.0.0.0:5858 app.js
+    depends_on:
+      - zookeeper
+      - kafka
+    ports:
+      - 3000:3000
+      - 5858:5858
+      - 9229:9229
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app/kafka-exampl
+      - /app/kafka-exampl/node_modules
+    # networks: 
+    #   - stack
+
+
+  zookeeper:
+    image: zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+    restart: always
+    logging:
+      driver: none
+    # networks: 
+    #   - stack
+
+  kafka:
+    image: ches/kafka
+    hostname: kafka
+    depends_on:
+      - zookeeper
+    links: 
+      - zookeeper    
+    ports:
+      - "9092"
+      - "9021"
+      - "7203"
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - ZOOKEEPER_IP=zookeeper
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - ./events:/scripts
+      #include these to make your kafka instance persistent
+      # - ./vol/kafka1/data:/data
+      # - ./vol/kafka1/logs:/logs
+    # entrypoint: ["/start.sh"]
+    #,"/scripts/start-kafka-shell.sh"]
+    # logging:
+    #   driver: none
+    # networks: 
+    #   - stack

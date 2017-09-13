@@ -4,8 +4,13 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon --harmony app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kirk Byers",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "kafka-node": "^2.2.3",
+    "nodemon": "^1.12.0"
+  }
 }
