@@ -3,7 +3,7 @@ services:
   kafka_exampl:
     restart: always
     build: .
-    command: node_modules/.bin/nodemon --harmony --inspect-brk=0.0.0.0:5858 app.js
+    command: node_modules/.bin/nodemon --harmony --inspect=0.0.0.0:5858 app.js
     depends_on:
       - zookeeper
       - kafka
@@ -21,14 +21,12 @@ services:
 
 
   zookeeper:
-    image: zookeeper:latest
+    image: zookeeper:3.4
     ports:
       - "2181:2181"
     environment:
       ZOO_MY_ID: 1
-    restart: always
-    logging:
-      driver: none
+    restart: unless-stopped
     # networks: 
     #   - stack
 
@@ -36,19 +34,18 @@ services:
     image: ches/kafka
     hostname: kafka
     depends_on:
-      - zookeeper
-    links: 
-      - zookeeper    
+      - zookeeper  
     ports:
-      - "9092"
-      - "9021"
-      - "7203"
+      - "9092:9092"
+      - "9021:9021"
+      - "7203:7203"
     environment:
       - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
       - ZOOKEEPER_IP=zookeeper
-    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
       # - ./events:/scripts
       #include these to make your kafka instance persistent
       # - ./vol/kafka1/data:/data
