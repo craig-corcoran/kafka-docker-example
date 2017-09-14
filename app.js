@@ -1,4 +1,4 @@
-const { kafkaClient } = require('./utils');
+const { kafkaClient, topics } = require('./utils');
 
 const { namedProducerSend } = require('./producers');
 const { listenNamedConsumer } = require('./consumers');
@@ -8,11 +8,12 @@ const client = kafkaClient;
 client.on('error', (err) => console.log(err));
 client.on('ready', () => {
   console.log('CLIENT READY');
-  let i = 1;
-  namedProducerSend('CLIENT READY');
-  listenNamedConsumer();
-  setInterval(() => {
-    namedProducerSend(`INTERVAL! ${i}`);
-    i++;
-  }, 1000)
+  kafkaClient.refreshMetadata([topics.ready], (err) => {
+    if (err) {
+      console.log(`ERRR REFRESHING METADATA: ${err}`);
+    } else { 
+      namedProducerSend('CLIENT READY');
+      listenNamedConsumer();
+    }
+  });
 });

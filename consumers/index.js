@@ -7,7 +7,7 @@ const namedConsumer = new Consumer(kafkaClient, [{ topic: topics.ready }], { aut
 
 namedConsumer.on('error', (err) => {
   // handle error
-  console.log(err);
+  console.log(`ERR IN CONSUMER: ${err}`);
 });
 
 function listenNamedConsumer() {

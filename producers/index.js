@@ -3,9 +3,12 @@ const Producer = kafka.Producer;
 
 const { kafkaClient, topics } = require('../utils');
 
-const namedProducer = new Producer(kafkaClient);
+const namedProducer = new Producer(kafkaClient, {
+  requireAcks: 1,
+  ackTimeoutMs: 500,
+});
 
-const readyQueue = [];
+const retryQueue = [];
 let ready = false;
 namedProducer.on('ready', () => {
   ready = true;
@@ -18,15 +21,19 @@ namedProducer.on('error', (err) => {
 
 function sendReadyMessage(message) {
   if (!ready) {
-    readyQueue.push(message);
+    retryQueue.push(message);
   } else {
     const payload = [{
       topic: topics.ready, // Your topic string here
       messages: message,
-      attributes: 1 // idk what this is
+      attributes: 1
     }];
     namedProducer.send(payload, (err, data) => {
-      // Handle it?
+      if (err) {
+        console.log(`ERR SENDING PRODUCER MESSAGE: ${err}`)
+      } else {
+        console.log(`SENT PRODUCER MESSAGE: ${data}`)
+      }
     })
   }
 }
