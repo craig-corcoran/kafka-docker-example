@@ -1,6 +1,6 @@
 FROM node:8.2-alpine
 
-ENV HOME=/app/kafka-exampl NPM_CONFIG_LOGLEVEL=warn
+ENV HOME=/app
 COPY package.json package-lock.json $HOME/
 
 WORKDIR $HOME
