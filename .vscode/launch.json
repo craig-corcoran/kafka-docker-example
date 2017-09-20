@@ -8,7 +8,7 @@
             "port": 5858,
             "address": "localhost",
             "localRoot": "${workspaceRoot}",
-            "remoteRoot": "/app/kafka-exampl",
+            "remoteRoot": "/app/example_service",
             "protocol": "inspector",
             "restart": true
         }
